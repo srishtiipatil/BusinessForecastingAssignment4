@@ -1,0 +1,117 @@
+---
+title: "Assignment 4"
+author: "Srishti Patil"
+date: "2024-10-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(fpp)
+library(fpp2)
+library(TTR)
+
+
+file_path <- "C:\\Users\\Srishti\\Desktop\\FALL24\\BF\\Assignment3\\Data_NewYork.xlsx"
+dataFile <- read_excel(file_path)
+head(dataFile)
+timeSeriesData <- ts(dataFile$UnemployedLF, start=c(1976, 1), frequency=12)
+plot(timeSeriesData)
+Acf(timeSeriesData)
+
+#Mean
+mean_forecast <- meanf(timeSeriesData,5)
+print(mean_forecast)
+plot(mean_forecast)
+
+# Naive
+naive_forecast <- naive(timeSeriesData,5)
+print(naive_forecast)
+plot(naive_forecast)
+
+# Random Walk
+rwf_forecast <- rwf(timeSeriesData,5)
+rwf_forecast <- rwf(timeSeriesData,5, drift=TRUE)
+print(rwf_forecast)
+plot(rwf_forecast)
+
+# Seasonal Naive
+snaive_forecast <- snaive(timeSeriesData,5)
+print(snaive_forecast)
+plot(snaive_forecast)
+
+# Moving Averages
+MA5_forecast <- ma(timeSeriesData,order=5)
+print(MA5_forecast)
+plot(MA5_forecast)
+
+MA10_forecast <- ma(timeSeriesData,order=9)
+print(MA10_forecast)
+plot(MA10_forecast)
+
+
+# Decomposition
+ets_forecast <- ets(timeSeriesData)
+print(ets_forecast)
+plot(ets_forecast)
+attributes(ets_forecast)
+ets_forecast$mse
+
+# HoltWinters
+HW_forecast <- HoltWinters(timeSeriesData)
+print(HW_forecast)
+plot(HW_forecast)
+
+SSE_Simple <- HoltWinters(timeSeriesData,beta=FALSE,gamma=FALSE)
+print(SSE_Simple)
+plot(SSE_Simple)
+
+#Holt
+holt_forecast<-holt(timeSeriesData)
+print(holt_forecast)
+plot(holt_forecast)
+
+#Forecast
+forecast_ets_1 <- forecast.ets(ets_forecast, h=5)
+plot(forecast_ets_1)
+forecast_ets_2 <- forecast(ets_forecast, h=5)
+plot(forecast_ets_2)
+winters_forecast <- hw(timeSeriesData, seasonal="additive")
+plot(winters_forecast)
+print(winters_forecast)
+
+
+
+# plot all in a single chart
+plot(mean_forecast)
+lines(naive_forecast$mean,col="red")
+lines(rwf_forecast$mean,col="green")
+lines(snaive_forecast$mean,col="black")
+lines(MA5_forecast,col="pink")
+lines(MA10_forecast,col="blue")
+lines(ets_forecast$mean,col="yellow")
+lines(holt_forecast$mean,col="orange")
+lines(HW_forecast$mean,col="brown")
+
+
+#Attributes
+attributes(naive_forecast)
+
+
+accuracy(mean_forecast)
+accuracy(naive_forecast)
+accuracy(rwf_forecast)
+accuracy(snaive_forecast)
+accuracy(ets_forecast)
+accuracy(holt_forecast)
+accuracy(winters_forecast)
+
+
+```
+
